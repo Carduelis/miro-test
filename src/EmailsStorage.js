@@ -86,7 +86,7 @@ export default class EmailsStorage {
 		this.trigger('remove');
 	}
 
-	getEmailsList() {
+	get emailsList() {
 		return Array.from(this.emails.keys());
 	}
 

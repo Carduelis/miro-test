@@ -1,10 +1,12 @@
 import './styles.less';
 import { createEl } from './utils';
 import EmailsStorage from './EmailsStorage';
+import InputElement from './InputElement';
 
 class EmailEditor {
 	defaultOptions = {
 		rootFontSize: '14px',
+		placeholder: 'add more people...',
 		emailsList: [
 			'javepy@gmail.com',
 			'pavepy@gmail.com',
@@ -26,7 +28,7 @@ class EmailEditor {
 		if (!(element instanceof HTMLElement)) {
 			throw new TypeError(`HTMLElement expected, ${element} given`);
 		}
-		this.initDOM();
+		this.init();
 		this.setEmailsList(this.options.emailsList);
 	}
 
@@ -36,59 +38,25 @@ class EmailEditor {
 
 	appendEmails() {}
 
-	initDOM() {
+	init() {
 		this.$wrapper = createEl('div.wrapper');
-		this.$input = createEl('input', {
-			type: 'text',
-			placeholder: 'add more people...',
-		});
-		const { $input, $wrapper } = this;
-		$input.addEventListener('input', this.handleInput);
-		$input.addEventListener('keypress', this.handleKeypress);
-		$input.addEventListener('blur', this.handleBlur);
-		const fragment = document.createDocumentFragment();
-		this.emails.forEach(email => {
-			fragment.appendChild(email.$el);
-		});
-		$wrapper.appendChild(fragment);
-		$wrapper.appendChild($input);
+		const { $wrapper } = this;
+		const inputInstance = new InputElement(
+			this.options.placeholder,
+			this.onAdd
+		);
+		const $input = inputInstance.$el;
+
+		this.$wrapper.appendChild($input);
 		this.element.appendChild($wrapper);
+
 		this.emailsStorage = new EmailsStorage({
 			$wrapper,
 			$input,
 		});
 	}
 
-	handleInput = event => {
-		console.log(event.target.value);
-		const values = event.target.value.split(',');
-		if (values.length > 1) {
-			this.readFromInput(values);
-		}
-		if (event.target.value) {
-			// do nothing
-			console.log(event);
-		}
-	};
-
-	handleKeypress = event => {
-		if (event.key === 'Enter') {
-			this.readFromInput(this.$input.value);
-		}
-	};
-
-	readFromInput = payload => {
-		this.emailsStorage.add(payload);
-		this.$input.value = '';
-		this.$input.scrollIntoView({
-			behavior: 'smooth',
-			block: 'start',
-		});
-	};
-
-	handleBlur = event => {
-		this.readFromInput(this.$input.value);
-	};
+	onAdd = payload => this.emailsStorage.add(payload);
 
 	setEmailsList(list) {
 		this.emailsStorage.setEmailsList(list);
@@ -102,9 +70,7 @@ class EmailEditor {
 	}
 
 	getEmailsList() {
-		return Array.from(this.emails)
-			.filter(email => email.isValid)
-			.map(email => email.value);
+		return this.emailsStorage.emailsList;
 	}
 }
 
