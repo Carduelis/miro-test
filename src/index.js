@@ -1,36 +1,6 @@
 import './styles.less';
-
-const RegExp = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-
-const createEl = (tagNameAndClass, attributes = {}) => {
-	const [tagName, ...classes] = tagNameAndClass.split('.');
-	const $el = document.createElement(tagName);
-	classes.forEach(className => $el.classList.add(className));
-	Object.entries(attributes).forEach(entry => $el.setAttribute(...entry));
-	return $el;
-};
-
-class Email {
-	constructor(email) {
-		this.value = email;
-		this.$el = this.initElement();
-	}
-
-	initElement() {
-		const $tag = createEl('span.tag');
-		const $button = createEl('button');
-		const $email = createEl('span.email');
-		const $text = document.createTextNode(this.value);
-		$email.appendChild($text);
-		$tag.appendChild($email);
-		$tag.appendChild($button);
-		return $tag;
-	}
-
-	get isValid() {
-		return RegExp.test(this.value);
-	}
-}
+import { createEl } from './utils';
+import EmailsStorage from './EmailsStorage';
 
 class EmailEditor {
 	defaultOptions = {
@@ -56,20 +26,26 @@ class EmailEditor {
 		if (!(element instanceof HTMLElement)) {
 			throw new TypeError(`HTMLElement expected, ${element} given`);
 		}
-		this.setEmailsList(this.options.emailsList);
 		this.initDOM();
+		this.setEmailsList(this.options.emailsList);
 	}
 
 	get options() {
 		return { ...this.defaultOptions, ...this.userOptions };
 	}
 
+	appendEmails() {}
+
 	initDOM() {
-		const $wrapper = createEl('div.wrapper');
-		const $input = createEl('input', {
+		this.$wrapper = createEl('div.wrapper');
+		this.$input = createEl('input', {
 			type: 'text',
 			placeholder: 'add more people...',
 		});
+		const { $input, $wrapper } = this;
+		$input.addEventListener('input', this.handleInput);
+		$input.addEventListener('keypress', this.handleKeypress);
+		$input.addEventListener('blur', this.handleBlur);
 		const fragment = document.createDocumentFragment();
 		this.emails.forEach(email => {
 			fragment.appendChild(email.$el);
@@ -77,19 +53,52 @@ class EmailEditor {
 		$wrapper.appendChild(fragment);
 		$wrapper.appendChild($input);
 		this.element.appendChild($wrapper);
+		this.emailsStorage = new EmailsStorage({
+			$wrapper,
+			$input,
+		});
 	}
 
-	setEmailsList(list) {
-		this.emails = new Map();
-		list.forEach(email => {
-			this.emails.set(email, new Email(email));
+	handleInput = event => {
+		console.log(event.target.value);
+		const values = event.target.value.split(',');
+		if (values.length > 1) {
+			this.readFromInput(values);
+		}
+		if (event.target.value) {
+			// do nothing
+			console.log(event);
+		}
+	};
+
+	handleKeypress = event => {
+		if (event.key === 'Enter') {
+			this.readFromInput(this.$input.value);
+		}
+	};
+
+	readFromInput = payload => {
+		this.emailsStorage.add(payload);
+		this.$input.value = '';
+		this.$input.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
 		});
-		if (list.length !== this.emails.size) {
+	};
+
+	handleBlur = event => {
+		this.readFromInput(this.$input.value);
+	};
+
+	setEmailsList(list) {
+		this.emailsStorage.setEmailsList(list);
+		if (list.length !== this.emailsStorage.emails.size) {
 			console.log(
-				`${list.length - this.emails.size} email duplicate(s) detected`
+				`${list.length -
+					this.emailsStorage.emails.size} email duplicate(s) detected`
 			);
 		}
-		return this.emails.size;
+		return this.emailsStorage.emails.size;
 	}
 
 	getEmailsList() {
