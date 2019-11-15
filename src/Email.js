@@ -1,15 +1,22 @@
 import { createEl } from './utils';
+import Eventer from './Eventer';
 const RegExp = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
-export default class Email {
-	constructor(email, emailsStorage) {
+const EMAIL_EVENTS = ['remove'];
+
+export default class Email extends Eventer {
+	constructor(email) {
+		super(EMAIL_EVENTS);
 		this.value = email;
 		this.$el = this.createElement();
-		this.emailsStorage = emailsStorage;
 	}
 
-	handleClick = () => {
-		this.emailsStorage.remove(this.value);
+	get isValid() {
+		return RegExp.test(this.value);
+	}
+
+	handleCloseClick = () => {
+		this.trigger('remove', this);
 	};
 
 	createElement() {
@@ -19,7 +26,7 @@ export default class Email {
 		const $text = document.createTextNode(this.value);
 		const $buttonText = document.createTextNode('✕');
 		this.$button.appendChild($buttonText);
-		this.$button.addEventListener('click', this.handleClick);
+		this.$button.addEventListener('click', this.handleCloseClick);
 		$email.appendChild($text);
 		$tag.appendChild($email);
 		$tag.appendChild(this.$button);
@@ -27,11 +34,6 @@ export default class Email {
 	}
 
 	destroy() {
-		this.$button.removeEventListener('click', this.handleClick);
-		this.emailsStorage.$wrapper.removeChild(this.$el);
-	}
-
-	get isValid() {
-		return RegExp.test(this.value);
+		this.$button.removeEventListener('click', this.handleCloseClick);
 	}
 }

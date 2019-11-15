@@ -15,18 +15,19 @@ class EmailEditor {
 		],
 	};
 
-	emails = new Map();
-
 	constructor(element, userOptions = {}) {
 		if (typeof window === 'undefined') {
 			throw new TypeError(
-				'The plugin is only intended to work in browser main thread'
+				'The plugin is only intended to work in browser main thread',
 			);
 		}
 		this.userOptions = userOptions;
-		this.element = element;
+		this.$root = element;
 		if (!(element instanceof HTMLElement)) {
 			throw new TypeError(`HTMLElement expected, ${element} given`);
+		}
+		if (typeof userOptions !== 'object' || Array.isArray(userOptions)) {
+			throw new TypeError('Expected an object as the second argument');
 		}
 		this.init();
 		this.setEmailsList(this.options.emailsList);
@@ -36,34 +37,30 @@ class EmailEditor {
 		return { ...this.defaultOptions, ...this.userOptions };
 	}
 
-	appendEmails() {}
-
 	init() {
 		this.$wrapper = createEl('div.wrapper');
 		const { $wrapper } = this;
-		const inputInstance = new InputElement(
-			this.options.placeholder,
-			this.onAdd
-		);
-		const $input = inputInstance.$el;
+		this.input = new InputElement(this.options.placeholder);
+		const $input = this.input.$el;
 
 		this.$wrapper.appendChild($input);
-		this.element.appendChild($wrapper);
+		this.$root.appendChild($wrapper);
 
 		this.emailsStorage = new EmailsStorage({
 			$wrapper,
 			$input,
 		});
-	}
 
-	onAdd = payload => this.emailsStorage.add(payload);
+		this.input.on('add', this.emailsStorage.add);
+	}
 
 	setEmailsList(list) {
 		this.emailsStorage.setEmailsList(list);
 		if (list.length !== this.emailsStorage.emails.size) {
 			console.log(
 				`${list.length -
-					this.emailsStorage.emails.size} email duplicate(s) detected`
+					this.emailsStorage.emails
+						.size} email duplicate(s) detected`,
 			);
 		}
 		return this.emailsStorage.emails.size;
@@ -71,6 +68,10 @@ class EmailEditor {
 
 	getEmailsList() {
 		return this.emailsStorage.emailsList;
+	}
+
+	destroy() {
+		this.input.destroy();
 	}
 }
 

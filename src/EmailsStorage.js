@@ -1,12 +1,18 @@
 import { createEl } from './utils';
 import Email from './Email';
+import Eventer from './Eventer';
 
 const EVENT_NAMES = ['add', 'remove', 'clear'];
 
-export default class EmailsStorage {
+const byType = value => typeof value === 'string';
+const byEmptiness = value => value.trim().length !== 0;
+const byExistance = map => value => !map.has(value);
+
+export default class EmailsStorage extends Eventer {
 	emails = new Map();
 
 	constructor({ $wrapper, $input }) {
+		super(EVENT_NAMES);
 		this.$wrapper = $wrapper;
 		this.$input = $input;
 	}
@@ -15,39 +21,9 @@ export default class EmailsStorage {
 		this.$wrapper.insertBefore(node, this.$input);
 	}
 
-	callbacks = EVENT_NAMES.reduce((acc, eventName) => {
-		acc[eventName] = new Set();
-		return acc;
-	}, {});
-
-	on(key, cb) {
-		if (key in this.callbacks) {
-			this.callbacks[key].add(cb);
-		}
-		throw new Error(
-			`${key} event is not supported. Availables ${EVENT_NAMES}`
-		);
-	}
-
-	off(key, cb) {
-		if (key in this.callbacks) {
-			this.callbacks[key].delete(cb);
-		}
-		throw new Error(
-			`${key} event is not supported. Availables ${EVENT_NAMES}`
-		);
-	}
-
-	trigger(key, ...rest) {
-		this.callbacks[key].forEach(cb => cb(...rest));
-	}
-
 	clear() {
-		if (this.emails.size === 0) {
-			return;
-		}
 		this.emails.forEach(email => {
-			this.$wrapper.removeChild(email.$el);
+			email.trigger('remove');
 		});
 		this.emails.clear();
 
@@ -58,31 +34,30 @@ export default class EmailsStorage {
 		const values = Array.isArray(payload) ? payload : [payload];
 
 		const fragment = document.createDocumentFragment();
-		const filterByType = value => typeof value === 'string';
-		const filterByEmptiness = value => value.trim().length !== 0;
 
-		values
-			.filter(filterByType) // V8 can combine calls
-			.filter(filterByEmptiness)
-			.forEach(value => {
-				if (!this.emails.has(value)) {
-					const email = new Email(value, this);
-					this.emails.set(value, email);
-					this.trigger('add', email);
-					fragment.appendChild(email.$el);
-				}
-			});
+		// we can combine filters for better performance or use Prepack for such cases
+		const newEmails = values
+			.filter(byType)
+			.filter(byEmptiness)
+			.filter(byExistance(this.emails));
+
+		newEmails.forEach(value => {
+			if (!this.emails.has(value)) {
+				const email = new Email(value);
+				email.on('remove', this.remove);
+				this.emails.set(value, email);
+				fragment.appendChild(email.$el);
+			}
+		});
 
 		this.insert(fragment);
+		this.trigger('add', newEmails);
 	}
 
-	remove(value) {
-		if (!this.emails.has(value)) {
-			return;
-		}
-		const email = this.emails.get(value);
-		email.destroy();
+	remove(email) {
 		this.emails.delete(email);
+		email.destroy();
+		this.$wrapper.removeChild(this.$el);
 		this.trigger('remove');
 	}
 
@@ -91,7 +66,13 @@ export default class EmailsStorage {
 	}
 
 	setEmailsList(list) {
-		this.clear();
+		if (this.emails.size !== 0) {
+			this.clear();
+		}
 		this.add(list);
+	}
+
+	destroy() {
+		this.clear();
 	}
 }

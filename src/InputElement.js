@@ -1,7 +1,11 @@
 import { createEl } from './utils';
+import Eventer from './Eventer';
 
-export default class InputElement {
+const INPUT_EVENTS = ['add'];
+
+export default class InputElement extends Eventer {
 	constructor(placeholder, add) {
+		super(INPUT_EVENTS);
 		this.$el = createEl('input', {
 			type: 'text',
 			placeholder,
@@ -34,11 +38,17 @@ export default class InputElement {
 	};
 
 	readFromInput = payload => {
-		this.add(payload);
+		this.trigger('add', payload);
 		this.$el.value = '';
 		this.$el.scrollIntoView({
 			behavior: 'smooth',
 			block: 'start',
 		});
 	};
+
+	destroy() {
+		this.$el.removeEventListener('input', this.handleInput);
+		this.$el.removeEventListener('keypress', this.handleKeypress);
+		this.$el.removeEventListener('blur', this.handleBlur);
+	}
 }
