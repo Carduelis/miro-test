@@ -25,19 +25,18 @@
 #app {
 	margin: 2rem;
 	font-size: 14px;
-	font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-		Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
 }
 h1 {
 	color: @primary-color;
 	// background-color: @bg;
 }
 .wrapper {
-	display: flex;
-	flex-wrap: wrap;
+	font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+		Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
 	border: 1px solid #ccc;
 	border-radius: 0.25em;
 	padding: 0.25em;
+	min-height: 8em;
 	max-height: 9em;
 	overflow-y: auto;
 	*,
@@ -49,9 +48,12 @@ h1 {
 		border: none;
 		background: transparent;
 		border-radius: 2em;
+		height: auto;
 		padding: 0.2em 0.5em;
+		font-size: inherit;
+		font-family: inherit;
 		margin: 0.3em;
-		line-height: 1.3em;
+		line-height: inherit;
 		.placeholder(@textColorPlaceholder);
 		&:focus {
 			outline: none;
@@ -67,31 +69,67 @@ h1 {
 	display: inline-flex;
 	align-items: stretch;
 	margin: 0.3em;
+	font-size: 1em;
 	line-height: 1.3em;
 	color: @textColorMain;
 	border-radius: 2em;
 	background-color: @backgroundTagColor;
 	// when the form is small, but email is long
 	max-width: calc(100% - 0.6em);
+	&.invalid {
+		background-color: transparent;
+		margin-right: 0;
+		.email {
+			cursor: help;
+			border-bottom-color: #e65959;
+		}
+		button {
+			border-radius: 50%;
+			height: 1.5em;
+			margin: auto;
+			width: 1.5em;
+			padding: 0;
+		}
+	}
 	.email {
 		max-width: 20em; // http://www.raycon.com.au/articles.php?n=k9htyces
-		padding: 0.2em;
-		padding-left: 0.5em;
+		margin: 0.2em;
+		margin-left: 0.5em;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		border-bottom: 1px dashed transparent;
 	}
 	button {
 		background: transparent;
 		border: none;
+		color: inherit;
 		padding: 0;
-		min-width: 2em;
-		font-size: 0.75em;
+		min-width: 1.5em;
 		margin: 0;
 		cursor: pointer;
 		border-radius: 0 1em 1em 0;
 		// optical center should be shifted
 		padding-right: 0.3em;
 		box-sizing: content-box;
+		span {
+			display: inline-block;
+			transition: transform 200ms;
+			height: 1em;
+			width: 1em;
+			font-size: 0.8em;
+			line-height: 1em;
+			border-radius: 1em;
+		}
+		&:focus {
+			outline: none;
+			background-color: rgba(0, 0, 0, 0.05);
+		}
+		&:hover span {
+			transform: rotate(90deg);
+		}
+		&:active span {
+			transform: rotate(180deg);
+		}
 	}
 }

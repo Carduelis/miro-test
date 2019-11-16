@@ -1,7 +1,11 @@
 import './styles.less';
 import { createEl } from './utils';
-import EmailsStorage from './EmailsStorage';
+import EmailsList from './EmailsList';
 import InputElement from './InputElement';
+import Eventer from './Eventer';
+import Email from './Email';
+
+// const PUBLIC_EVENTS = ['add', 'remove'];
 
 class EmailEditor {
 	defaultOptions = {
@@ -29,6 +33,7 @@ class EmailEditor {
 		if (typeof userOptions !== 'object' || Array.isArray(userOptions)) {
 			throw new TypeError('Expected an object as the second argument');
 		}
+
 		this.init();
 		this.setEmailsList(this.options.emailsList);
 	}
@@ -37,41 +42,66 @@ class EmailEditor {
 		return { ...this.defaultOptions, ...this.userOptions };
 	}
 
+	getLocalPath(path) {
+		// we can rely on tagNames or classes when search by localpath
+		const wrapperPathIndex = path.findIndex(node => node === this.$wrapper);
+		return path.slice(0, wrapperPathIndex);
+	}
+
+	getEmailFromPath(path) {
+		return path.find(node => node.emailInstance instanceof Email);
+	}
+
+	handleClick = event => {
+		const $emailNode = this.getEmailFromPath(event.path);
+		const localPath = this.getLocalPath(event.path);
+		if ($emailNode && localPath.find(node => node.tagName === 'BUTTON')) {
+			this.emailsList.remove($emailNode.emailInstance);
+		}
+		if (!$emailNode) {
+			this.input.$el.focus();
+		}
+	};
+
 	init() {
 		this.$wrapper = createEl('div.wrapper');
 		const { $wrapper } = this;
 		this.input = new InputElement(this.options.placeholder);
 		const $input = this.input.$el;
+		$wrapper.appendChild($input);
+		if (this.options.rootFontSize) {
+			$wrapper.style.fontSize = this.options.rootFontSize;
+		}
+		$wrapper.addEventListener('click', this.handleClick);
 
-		this.$wrapper.appendChild($input);
 		this.$root.appendChild($wrapper);
 
-		this.emailsStorage = new EmailsStorage({
-			$wrapper,
-			$input,
-		});
+		this.emailsList = new EmailsList({ $wrapper, $input });
+		this.input.on('createEmail', this.emailsList.add);
 
-		this.input.on('add', this.emailsStorage.add);
+		// bubble events
+		this.on = this.emailsList.on.bind(this.emailsList);
+		this.off = this.emailsList.off.bind(this.emailsList);
 	}
 
 	setEmailsList(list) {
-		this.emailsStorage.setEmailsList(list);
-		if (list.length !== this.emailsStorage.emails.size) {
-			console.log(
-				`${list.length -
-					this.emailsStorage.emails
-						.size} email duplicate(s) detected`,
-			);
-		}
-		return this.emailsStorage.emails.size;
+		this.emailsList.setEmailsList(list);
+		return this.emailsList.map.size;
 	}
 
 	getEmailsList() {
-		return this.emailsStorage.emailsList;
+		return this.emailsList.emailsList;
+	}
+
+	clearEmailsList() {
+		return this.emailsList.clear();
 	}
 
 	destroy() {
+		this.$wrapper.removeEventListener('click', this.focusInput);
+		this.emailsList.destroy();
 		this.input.destroy();
+		this.$root.removeChild(this.$wrapper);
 	}
 }
 

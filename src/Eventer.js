@@ -1,11 +1,15 @@
-const eventNames = Symbol('eventNames');
-const callbacks = Symbol('callbacks');
-const init = Symbol('init');
+const eventNames = Symbol('privateEventNames');
+const callbacks = Symbol('privateCallbacks');
+const init = Symbol('privateInit');
 
 export default class Eventer {
 	constructor(arr) {
 		this[eventNames] = arr;
 		this[init]();
+	}
+
+	get availableEvents() {
+		return `"${this[eventNames].join('", "')}"`;
 	}
 
 	[init]() {
@@ -20,7 +24,7 @@ export default class Eventer {
 			return this[callbacks][key].add(cb);
 		}
 		throw new Error(
-			`${key} event is not supported. Available: ${this[eventNames]}`,
+			`"${key}"-event is not supported. Available: ${this.availableEvents}`,
 		);
 	}
 
@@ -29,11 +33,16 @@ export default class Eventer {
 			return this[callbacks][key].delete(cb);
 		}
 		throw new Error(
-			`${key} event is not supported. Available: ${this[eventNames]}`,
+			`"${key}"-event is not supported. Available: ${this.availableEvents}`,
 		);
 	}
 
 	trigger(key, ...rest) {
-		this[callbacks][key].forEach(cb => cb(...rest));
+		if (key in this[callbacks]) {
+			return this[callbacks][key].forEach(cb => cb(...rest));
+		}
+		throw new Error(
+			`"${key}"-event is not supported. Available: ${this.availableEvents}`,
+		);
 	}
 }

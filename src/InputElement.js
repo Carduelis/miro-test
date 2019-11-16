@@ -1,16 +1,15 @@
 import { createEl } from './utils';
 import Eventer from './Eventer';
 
-const INPUT_EVENTS = ['add'];
+const INPUT_EVENTS = ['createEmail'];
 
 export default class InputElement extends Eventer {
-	constructor(placeholder, add) {
+	constructor(placeholder) {
 		super(INPUT_EVENTS);
 		this.$el = createEl('input', {
 			type: 'text',
 			placeholder,
 		});
-		this.add = add;
 		this.init();
 	}
 
@@ -38,7 +37,7 @@ export default class InputElement extends Eventer {
 	};
 
 	readFromInput = payload => {
-		this.trigger('add', payload);
+		this.trigger('createEmail', payload);
 		this.$el.value = '';
 		this.$el.scrollIntoView({
 			behavior: 'smooth',
