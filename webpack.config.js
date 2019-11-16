@@ -33,7 +33,6 @@ const config = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			title: 'Miro App',
 			template: 'src/index.html',
 			filename: 'index.html',
 		}),
