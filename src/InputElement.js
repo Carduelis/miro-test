@@ -39,10 +39,6 @@ export default class InputElement extends Eventer {
 	readFromInput = payload => {
 		this.trigger('createEmail', payload);
 		this.$el.value = '';
-		this.$el.scrollIntoView({
-			behavior: 'smooth',
-			block: 'start',
-		});
 	};
 
 	destroy() {

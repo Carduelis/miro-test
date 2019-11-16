@@ -68,6 +68,11 @@ export default class EmailsList extends Eventer {
 
 	insertNode(node) {
 		this.$wrapper.insertBefore(node, this.$input);
+		this.$input.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+		});
+		return this.$wrapper;
 	}
 
 	clear() {

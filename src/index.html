@@ -23,7 +23,6 @@
 			padding: 1.5rem;
 		}
 		body::after {
-			/* content: ''; */
 			background-image: url('./assets/mockup.png');
 			background-repeat: no-repeat;
 			position: fixed;
@@ -45,6 +44,10 @@
 			margin: 0.75rem 1.25rem;
 			border-radius: 0.5rem;
 			box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.4);
+			max-width: 1024px;
+		}
+		.wrapper.miro {
+			max-width: 540px;
 		}
 		.wrapper > section {
 			padding: 1.5rem 3rem;
@@ -100,7 +103,7 @@
 		}
 	</style>
 	<body>
-		<div class="wrapper">
+		<div class="wrapper miro">
 			<section class="input">
 				<h4>Share <b>Board name</b> with others</h4>
 				<div id="miroShareBoard"></div>
@@ -123,12 +126,11 @@
 		</div>
 		<script src="emails-editor.js"></script>
 		<script>
-			window.miroShareBoard = new EmailEditor(
-				document.getElementById('miroShareBoard'),
-				{
-					emailsList: ['john@miro.com'],
-				},
-			);
+			var options = {
+				emailsList: ['john@miro.com'],
+			};
+
+			window.miroShareBoard = new EmailEditor(miroShareBoard, options);
 			window.onAddEmail = function() {
 				var email = faker.internet.email();
 				var result = window.miroShareBoard.add(email);
@@ -137,14 +139,14 @@
 			window.getEmailsCount = function() {
 				alert(window.miroShareBoard.getEmailsList().length);
 			};
-			window.miroShareBoard.on('add', (...rest) =>
-				console.log('add', ...rest),
-			);
-			window.miroShareBoard.on('remove', (...rest) =>
-				console.log('remove', ...rest),
-			);
+			window.miroShareBoard.on('add', function(emails) {
+				console.log('add', emails);
+			});
+			window.miroShareBoard.on('remove', function(emails) {
+				console.log('remove', emails);
+			});
 
-			new EmailEditor(document.getElementById('emailEditor2'), {
+			new EmailEditor(emailEditor2, {
 				fontSize: '24px',
 			});
 		</script>

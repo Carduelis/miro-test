@@ -1,4 +1,5 @@
 import './styles.less';
+import 'core-js';
 import { createEl, getPath } from './utils';
 import EmailsList from './EmailsList';
 import InputElement from './InputElement';
