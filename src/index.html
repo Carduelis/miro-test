@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Miro test</title>
+		<meta charset="utf-8" />
+	</head>
+	<body>
+		<div id="app">
+			<h4>Share <span>Board name</span> with others</h4>
+			<div id="emailEditor1"></div>
+			<div id="emailEditor2"></div>
+		</div>
+		<script src="emails-editor.js"></script>
+		<script>
+			window.emailEditorInstance = new EmailEditor(
+				document.getElementById('emailEditor1'),
+			);
+
+			window.emailEditorInstance.on('add', (...rest) =>
+				console.log('add', ...rest),
+			);
+			window.emailEditorInstance.on('remove', (...rest) =>
+				console.log('remove', ...rest),
+			);
+
+			new EmailEditor(document.getElementById('emailEditor2'), {
+				fontSize: '16px',
+			});
+		</script>
+	</body>
+</html>

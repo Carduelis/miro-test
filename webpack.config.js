@@ -1,12 +1,15 @@
 // eslint-disable-next-line no-unused-vars
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
+
+const isDev = process.env.NODE_ENV === JSON.stringify('development')
 
 const config = {
 	entry: './src/index.js',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: 'bundle.js',
+		filename: 'emails-editor.js',
 	},
 	module: {
 		rules: [
@@ -25,12 +28,19 @@ const config = {
 			},
 		],
 	},
-	devtool: 'eval-source-map',
+	devtool: isDev ? 'eval-source-map' : false,
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
 		compress: true,
 		port: 9000,
 	},
+	plugins: [
+		new HtmlWebpackPlugin({
+			title: 'Miro App',
+			template: 'src/index.html',
+			filename: 'index.html',
+		}),
+	],
 };
 
 module.exports = config;

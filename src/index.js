@@ -9,7 +9,7 @@ import Email from './Email';
 
 class EmailEditor {
 	defaultOptions = {
-		rootFontSize: '14px',
+		fontSize: '14px',
 		placeholder: 'add more people...',
 		emailsList: [
 			'javepy@gmail.com',
@@ -64,13 +64,13 @@ class EmailEditor {
 	};
 
 	init() {
-		this.$wrapper = createEl('div.wrapper');
+		this.$wrapper = createEl('div.emailLoader_wrapper');
 		const { $wrapper } = this;
 		this.input = new InputElement(this.options.placeholder);
 		const $input = this.input.$el;
 		$wrapper.appendChild($input);
-		if (this.options.rootFontSize) {
-			$wrapper.style.fontSize = this.options.rootFontSize;
+		if (this.options.fontSize) {
+			$wrapper.style.fontSize = this.options.fontSize;
 		}
 		$wrapper.addEventListener('click', this.handleClick);
 
