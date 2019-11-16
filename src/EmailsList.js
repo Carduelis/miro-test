@@ -17,7 +17,9 @@ export default class EmailsList extends Eventer {
 	}
 
 	get emailsList() {
-		return Array.from(this.map.keys());
+		return Array.from(this.map.values())
+			.filter(email => email.isValid)
+			.map(email => email.value);
 	}
 
 	setEmailsList(list) {
@@ -50,6 +52,8 @@ export default class EmailsList extends Eventer {
 		if (newEmails.length > 0) {
 			this.trigger('add', newEmails);
 		}
+
+		return newEmails.length;
 	};
 
 	remove = (email, options = { silent: false }) => {

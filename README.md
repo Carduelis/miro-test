@@ -32,9 +32,10 @@ node dist/bundle.js
 
 Made with [createapp.dev](https://createapp.dev/)
 
+##
 
 ## Features
 
-* When there are a lot of emails, the email container scrolls down to the input element
-* `add` event always has a payload as an array of emails
-* 
+-   When there are a lot of emails, the email container scrolls down to the input element
+-   `add` event always has a payload as an array of emails
+-

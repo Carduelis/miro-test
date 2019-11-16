@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
-const isDev = process.env.NODE_ENV === JSON.stringify('development')
+const isDev = process.env.NODE_ENV === JSON.stringify('development');
 
 const config = {
 	entry: './src/index.js',
@@ -28,7 +28,7 @@ const config = {
 			},
 		],
 	},
-	devtool: isDev ? 'eval-source-map' : false,
+	devtool: 'eval-source-map',
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
 		compress: true,

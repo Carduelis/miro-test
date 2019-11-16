@@ -1,22 +1,14 @@
 import './styles.less';
-import { createEl } from './utils';
+import { createEl, getPath } from './utils';
 import EmailsList from './EmailsList';
 import InputElement from './InputElement';
-import Eventer from './Eventer';
 import Email from './Email';
-
-// const PUBLIC_EVENTS = ['add', 'remove'];
 
 class EmailEditor {
 	defaultOptions = {
-		fontSize: '14px',
+		fontSize: '14px', // actually it's totally not required
 		placeholder: 'add more people...',
-		emailsList: [
-			'javepy@gmail.com',
-			'pavepy@gmail.com',
-			'pavepy@gmail.com',
-			'asdasd@asdas.eu',
-		],
+		emailsList: [],
 	};
 
 	constructor(element, userOptions = {}) {
@@ -53,8 +45,9 @@ class EmailEditor {
 	}
 
 	handleClick = event => {
-		const $emailNode = this.getEmailFromPath(event.path);
-		const localPath = this.getLocalPath(event.path);
+		const path = getPath(event);
+		const $emailNode = this.getEmailFromPath(path);
+		const localPath = this.getLocalPath(path);
 		if ($emailNode && localPath.find(node => node.tagName === 'BUTTON')) {
 			this.emailsList.remove($emailNode.emailInstance);
 		}
@@ -87,6 +80,10 @@ class EmailEditor {
 	setEmailsList(list) {
 		this.emailsList.setEmailsList(list);
 		return this.emailsList.map.size;
+	}
+
+	add(payload) {
+		return this.emailsList.add(payload);
 	}
 
 	getEmailsList() {

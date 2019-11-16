@@ -2,29 +2,150 @@
 <html>
 	<head>
 		<title>Miro test</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+		<link
+			href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+			rel="stylesheet"
+		/>
 		<meta charset="utf-8" />
 	</head>
+	<style>
+		html {
+			font-size: 16px;
+		}
+		body {
+			margin: 0;
+			font-family: 'Open Sans', -apple-system, BlinkMacSystemFont,
+				'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue',
+				sans-serif;
+		}
+		section {
+			padding: 1.5rem;
+		}
+		body::after {
+			/* content: ''; */
+			background-image: url('./assets/mockup.png');
+			background-repeat: no-repeat;
+			position: fixed;
+			width: 600px;
+			height: 500px;
+			background-size: 580px;
+			top: 0;
+			left: 0;
+			opacity: 0.5;
+		}
+		body:hover::after {
+			opacity: 1;
+		}
+
+		body:active::after {
+			opacity: 0;
+		}
+		.wrapper {
+			margin: 0.75rem 1.25rem;
+			border-radius: 0.5rem;
+			box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.4);
+		}
+		.wrapper > section {
+			padding: 1.5rem 3rem;
+			border: 2px solid #f7f7f6;
+			border-top: 1px;
+		}
+		.wrapper > section.input {
+			border-top-left-radius: inherit;
+			border-top-right-radius: inherit;
+			background: #f7f7f6;
+		}
+		.wrapper > section.buttons {
+			border-bottom-left-radius: inherit;
+			border-bottom-right-radius: inherit;
+			border-color: #fff;
+			padding-bottom: 1.8rem;
+		}
+		h4 {
+			color: #050038;
+			margin: 0.5rem 0 1.5rem;
+			font-weight: normal;
+			font-size: 20px;
+			line-height: 1.35em;
+			border-bottom: 1px solid transparent;
+			/* letter-spacing: 0.01em; */
+		}
+		h4 b {
+			letter-spacing: 0.03em;
+		}
+		button {
+			color: #fff;
+			background: #4262ff;
+			box-sizing: border-box;
+			border: none;
+			display: inline-block;
+			padding: 0.8rem 1rem;
+			font-size: 0.85rem;
+			border-radius: 0.3rem;
+			letter-spacing: 0.01em;
+			font-family: inherit;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			text-align: center;
+			line-height: 1;
+			cursor: pointer;
+			margin: 0;
+			margin-right: 0.8rem;
+			vertical-align: middle;
+		}
+		button:focus {
+			outline: none;
+		}
+	</style>
 	<body>
-		<div id="app">
-			<h4>Share <span>Board name</span> with others</h4>
-			<div id="emailEditor1"></div>
+		<div class="wrapper">
+			<section class="input">
+				<h4>Share <b>Board name</b> with others</h4>
+				<div id="miroShareBoard"></div>
+			</section>
+			<section class="buttons">
+				<button title="Add email" onclick="onAddEmail()">
+					Add email
+				</button>
+				<button title="Get emails count" onclick="getEmailsCount()">
+					Get emails count
+				</button>
+			</section>
+		</div>
+
+		<section>
+			<h2>font-size: 24px</h2>
+		</section>
+		<div class="wrapper">
 			<div id="emailEditor2"></div>
 		</div>
 		<script src="emails-editor.js"></script>
 		<script>
-			window.emailEditorInstance = new EmailEditor(
-				document.getElementById('emailEditor1'),
+			window.miroShareBoard = new EmailEditor(
+				document.getElementById('miroShareBoard'),
+				{
+					emailsList: ['john@miro.com'],
+				},
 			);
-
-			window.emailEditorInstance.on('add', (...rest) =>
+			window.onAddEmail = function() {
+				var email = faker.internet.email();
+				var result = window.miroShareBoard.add(email);
+				console.log('Added emails:', result);
+			};
+			window.getEmailsCount = function() {
+				alert(window.miroShareBoard.getEmailsList().length);
+			};
+			window.miroShareBoard.on('add', (...rest) =>
 				console.log('add', ...rest),
 			);
-			window.emailEditorInstance.on('remove', (...rest) =>
+			window.miroShareBoard.on('remove', (...rest) =>
 				console.log('remove', ...rest),
 			);
 
 			new EmailEditor(document.getElementById('emailEditor2'), {
-				fontSize: '16px',
+				fontSize: '24px',
 			});
 		</script>
 	</body>

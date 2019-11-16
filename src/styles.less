@@ -26,30 +26,46 @@
 	}
 }
 
+.ellipsis() {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@btnSize: 1.5em;
+
 .@{prefix}wrapper {
 	font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
 		Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
 	border: 1px solid #ccc;
 	border-radius: 0.25em;
-	padding: 0.25em;
-	min-height: 8em;
-	max-height: 9em;
+	padding: 0.2em 0.25em;
+	background-color: white;
+	height: 6.25em;
+	line-height: 1.3em;
 	overflow-y: auto;
 	*,
 	*::before,
 	*::after {
 		box-sizing: border-box;
 	}
+
+	.tag,
+	input {
+		margin: 0.25em;
+		border-radius: 2em;
+	}
+
 	input {
 		border: none;
 		background: transparent;
-		border-radius: 2em;
 		height: auto;
-		padding: 0.2em 0.5em;
+		padding: 0.25em 0.5em;
 		font-size: inherit;
 		font-family: inherit;
-		margin: 0.3em;
+		margin-left: 0.35em;
 		line-height: inherit;
+		width: 10em;
 		.placeholder(@textColorPlaceholder);
 		&:focus {
 			outline: none;
@@ -60,12 +76,12 @@
 			);
 		}
 	}
+
 	.tag {
 		display: inline-flex;
 		align-items: stretch;
-		margin: 0.3em;
-		font-size: 1em;
-		line-height: 1.3em;
+		margin-right: 0;
+		animation: appear 200ms ease-in-out;
 		color: @textColorMain;
 		border-radius: 2em;
 		background-color: @backgroundTagColor;
@@ -74,25 +90,24 @@
 		&.invalid {
 			background-color: transparent;
 			margin-right: 0;
+			animation: none;
 			.email {
 				cursor: help;
 				border-bottom-color: #e65959;
 			}
 			button {
 				border-radius: 50%;
-				height: 1.5em;
+				height: @btnSize;
 				margin: auto;
-				width: 1.5em;
+				width: @btnSize;
 				padding: 0;
 			}
 		}
 		.email {
 			max-width: 20em; // http://www.raycon.com.au/articles.php?n=k9htyces
-			margin: 0.2em;
-			margin-left: 0.5em;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
+			margin: 0.25em;
+			margin-left: 0.6em;
+			.ellipsis();
 			border-bottom: 1px dashed transparent;
 		}
 		button {
@@ -100,21 +115,25 @@
 			border: none;
 			color: inherit;
 			padding: 0;
-			min-width: 1.5em;
+			width: @btnSize;
 			margin: 0;
+			font-size: 1em;
 			cursor: pointer;
 			border-radius: 0 1em 1em 0;
 			// optical center should be shifted
 			padding-right: 0.3em;
-			box-sizing: content-box;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
 			span {
+				@size: 1em;
 				display: inline-block;
 				transition: transform 200ms;
-				height: 1em;
-				width: 1em;
+				height: @size;
+				width: @size;
 				font-size: 0.8em;
-				line-height: 1em;
-				border-radius: 1em;
+				line-height: @size;
+				border-radius: @size;
 			}
 			&:focus {
 				outline: none;
@@ -127,5 +146,11 @@
 				transform: rotate(180deg);
 			}
 		}
+	}
+}
+
+@keyframes appear {
+	0% {
+		background-color: transparent;
 	}
 }
