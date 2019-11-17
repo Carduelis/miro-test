@@ -133,11 +133,11 @@
 			window.miroShareBoard = new EmailEditor(miroShareBoard, options);
 			window.onAddEmail = function() {
 				var email = faker.internet.email();
-				var result = window.miroShareBoard.add(email);
+				var result = window.miroShareBoard.addEmails(email);
 				console.log('Added emails:', result);
 			};
 			window.getEmailsCount = function() {
-				alert(window.miroShareBoard.getEmailsList().length);
+				alert(window.miroShareBoard.getEmails().length);
 			};
 			window.miroShareBoard.on('add', function(emails) {
 				console.log('add', emails);
@@ -148,6 +148,14 @@
 
 			new EmailEditor(emailEditor2, {
 				fontSize: '24px',
+				emailsList: [
+					'john@miro.com',
+					'pavepy@gmail.com',
+					'lol',
+					'kek',
+					'chebureck',
+					'superlongnamethatshouldnotbreak@somewhereinthe.domainzone',
+				],
 			});
 		</script>
 	</body>

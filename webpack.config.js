@@ -31,6 +31,7 @@ const config = {
 		compress: true,
 		port: 9000,
 	},
+	devtool: false,
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: 'src/index.html',

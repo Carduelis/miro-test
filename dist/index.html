@@ -126,19 +126,18 @@
 		</div>
 		<script src="emails-editor.js"></script>
 		<script>
-			window.miroShareBoard = new EmailEditor(
-				document.getElementById('miroShareBoard'),
-				{
-					emailsList: ['john@miro.com'],
-				}
-			);
+			var options = {
+				emailsList: ['john@miro.com'],
+			};
+
+			window.miroShareBoard = new EmailEditor(miroShareBoard, options);
 			window.onAddEmail = function() {
 				var email = faker.internet.email();
-				var result = window.miroShareBoard.add(email);
+				var result = window.miroShareBoard.addEmails(email);
 				console.log('Added emails:', result);
 			};
 			window.getEmailsCount = function() {
-				alert(window.miroShareBoard.getEmailsList().length);
+				alert(window.miroShareBoard.getEmails().length);
 			};
 			window.miroShareBoard.on('add', function(emails) {
 				console.log('add', emails);
@@ -147,8 +146,16 @@
 				console.log('remove', emails);
 			});
 
-			new EmailEditor(document.getElementById('emailEditor2'), {
+			new EmailEditor(emailEditor2, {
 				fontSize: '24px',
+				emailsList: [
+					'john@miro.com',
+					'pavepy@gmail.com',
+					'lol',
+					'kek',
+					'chebureck',
+					'superlongnamethatshouldnotbreak@somewhereinthe.domainzone',
+				],
 			});
 		</script>
 	<script type="text/javascript" src="emails-editor.js"></script></body>

@@ -7,7 +7,7 @@
 	"author": "",
 	"license": "ISC",
 	"scripts": {
-		"clean": "rm dist/bundle.js",
+		"clean": "rm dist/emails-editor.js",
 		"start:dev": "webpack-dev-server",
 		"build-dev": "webpack -d --mode development",
 		"build-prod": "webpack -p --mode production"
@@ -34,6 +34,7 @@
 		"less": "^3.10.3",
 		"less-loader": "^5.0.0",
 		"prettier": "^1.19.1",
+		"serve": "^11.2.0",
 		"style-loader": "^1.0.0",
 		"webpack": "^4.41.2",
 		"webpack-cli": "^3.3.10",
